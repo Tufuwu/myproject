@@ -1,0 +1,59 @@
+name: Tufuwu/test2
+on:
+  push:
+    branches:
+    - "**/*"
+    - master
+    - "/^v\\d+\\.\\d+\\.\\d+$/"
+    - "/^v\\d+\\.\\d+\\.\\d+-beta\\d+$/"
+    - "/^v\\d+\\.\\d+\\.\\d+-rc\\d+$/"
+  pull_request:
+concurrency:
+#   # This item has no matching transformer
+#   maximum_number_of_builds: 0
+env:
+  EMULATOR_API: '22'
+  EMULATOR_ABI: x86_64
+  EMULATOR_TAG: default
+  PATH: "$ANDROID_HOME:$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools:$PATH"
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: |-
+          ${{ github.workspace }}/.gradle
+          ${{ github.workspace }}/.m2/repository
+        key: "${{ runner.os }}-path"
+#     # 'sudo' was not transformed because there is no suitable equivalent in GitHub Actions
+    - run: echo $ANDROID_HOME
+    - run: sdkmanager --list || true
+    - run: echo yes | sdkmanager "tools"
+    - run: echo yes | sdkmanager "emulator"
+    - run: export EMULATOR="system-images;android-$EMULATOR_API;$EMULATOR_TAG;$EMULATOR_ABI"
+    - run: echo yes | sdkmanager "platforms;android-$EMULATOR_API"
+    - run: echo yes | sdkmanager --channel=4 "$EMULATOR"
+    - run: sdkmanager --list || true
+    - run: echo no | avdmanager create avd -n test -k "$EMULATOR" -f
+    - run: which emulator
+    - run: emulator -avd test -no-window -no-accel -no-snapshot -camera-back emulated -camera-front emulated -memory 2048 -writable-system &
+    - run: adb wait-for-device
+    - run: adb remount
+    - run: android-wait-for-emulator
+    - run: adb shell settings put global window_animation_scale 0 &
+    - run: adb shell settings put global transition_animation_scale 0 &
+    - run: adb shell settings put global animator_duration_scale 0 &
+    - run: sleep 20
+    - run: adb shell input keyevent 82 &
+    - run: adb logcat --help
+    - run: adb logcat -c
+    - run: adb logcat Test:V TestRunner:V CameraView:V CameraController:V Camera1:V WorkerHandler:V THREAD_STATE:S *:E &
+    - run: "./gradlew clean demo:assembleDebug cameraview:testDebugUnitTest cameraview:connectedCheck cameraview:mergedCoverageReport cameraview:javadoc"
+    - run: "./gradlew bintrayUpload"
+      if: "${{ github.event_name == 'push' && ${{ github.ref }} }}"
+    - run: bash <(curl -s https://codecov.io/bash) -s "*/build/reports/mergedCoverageReport/"
+      if: "${{ success() }}"
