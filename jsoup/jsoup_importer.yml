@@ -1,1 +1,39 @@
-
+name: Tufuwu/test2
+on:
+  push:
+    branches:
+    - "**/*"
+  pull_request:
+concurrency:
+#   # This item has no matching transformer
+#   maximum_number_of_builds: 0
+env:
+  GRAVIS: https://raw.githubusercontent.com/DanySK/Gravis-CI/master/
+jobs:
+  test:
+    runs-on: ubuntu-16.04
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: |-
+          ${{ github.workspace }}/.jabba/
+          ${{ github.workspace }}/.m2/
+        key: "${{ runner.os }}-path"
+    - run: curl "${GRAVIS}.install-jdk-travis.sh" --output .install-jdk-travis.sh
+    - run: wget http://apache.mirror.iphh.net/maven/maven-3/3.1.1/binaries/apache-maven-3.1.1-bin.tar.gz && tar xfz apache-maven-3.1.1-bin.tar.gz && sudo mv apache-maven-3.1.1 /usr/local/maven-3.1.1 && sudo rm -f /usr/local/maven && sudo ln -s /usr/local/maven-3.1.1 /usr/local/maven
+    - run: bash .install-jdk-travis.sh
+    - run: "/usr/local/maven/bin/mvn verify -B"
+    strategy:
+      matrix:
+        JDK:
+        - adopt@1.8.
+        - amazon-corretto@1.8.
+        - openjdk@1.9.
+        - openjdk@1.11.
+        - openjdk@1.12.
+        - openjdk@1.13.
+    env:
+      JDK: "${{ matrix.JDK }}"
