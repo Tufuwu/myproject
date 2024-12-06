@@ -1,0 +1,126 @@
+name: Tufuwu/test2
+on:
+  push:
+    branches:
+    - "**/*"
+  pull_request:
+concurrency:
+#   # This item has no matching transformer
+#   maximum_number_of_builds: 0
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "${{ github.workspace }}/.m2"
+        key: "${{ runner.os }}-path"
+#     # 'sudo' was not transformed because there is no suitable equivalent in GitHub Actions
+    - run: true
+    - run: mvn clean install -B -V
+    - run: test ${TRAVIS_TEST_RESULT} -eq 0 && mvn -s etc/travis-settings.xml -DskipTests=true -DskipDistribution=true deploy
+      if: "${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}"
+    strategy:
+      matrix: {}
+#       # 'allow_failures' transformations are currently unsupported.
+  test_2:
+    runs-on: # this agent type is not supported: [[{"dist"=>"trusty"}]]
+             ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "${{ github.workspace }}/.m2"
+        key: "${{ runner.os }}-path"
+    - uses: actions/setup-java@v4.0.0
+      with:
+        distribution: zulu
+        java-version: '8'
+#     # 'sudo' was not transformed because there is no suitable equivalent in GitHub Actions
+    - run: true
+    - run: mvn clean install -B -V
+    - run: test ${TRAVIS_TEST_RESULT} -eq 0 && mvn -s etc/travis-settings.xml -DskipTests=true -DskipDistribution=true deploy
+      if: "${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}"
+    - run: mvn jacoco:report && bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports"
+      if: "${{ success() }}"
+  test_3:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "${{ github.workspace }}/.m2"
+        key: "${{ runner.os }}-path"
+    - uses: actions/setup-java@v4.0.0
+      with:
+        distribution: zulu
+        java-version: '11'
+#     # 'sudo' was not transformed because there is no suitable equivalent in GitHub Actions
+    - run: true
+    - run: mvn -B -V clean install -DskipDistribution=true
+    - run: test ${TRAVIS_TEST_RESULT} -eq 0 && mvn -s etc/travis-settings.xml -DskipTests=true -DskipDistribution=true deploy
+      if: "${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}"
+  test_4:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "${{ github.workspace }}/.m2"
+        key: "${{ runner.os }}-path"
+    - uses: actions/setup-java@v4.0.0
+      with:
+        distribution: zulu
+        java-version: '13'
+#     # 'sudo' was not transformed because there is no suitable equivalent in GitHub Actions
+    - run: true
+    - run: mvn -B -V clean install -DskipDistribution=true
+    - run: test ${TRAVIS_TEST_RESULT} -eq 0 && mvn -s etc/travis-settings.xml -DskipTests=true -DskipDistribution=true deploy
+      if: "${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}"
+  test_5:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "${{ github.workspace }}/.m2"
+        key: "${{ runner.os }}-path"
+    - uses: actions/setup-java@v4.0.0
+      with:
+        distribution: zulu
+        java-version: '14'
+#     # 'sudo' was not transformed because there is no suitable equivalent in GitHub Actions
+    - run: true
+    - run: mvn -B -V clean install -DskipDistribution=true
+    - run: test ${TRAVIS_TEST_RESULT} -eq 0 && mvn -s etc/travis-settings.xml -DskipTests=true -DskipDistribution=true deploy
+      if: "${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}"
+  test_6:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "${{ github.workspace }}/.m2"
+        key: "${{ runner.os }}-path"
+    - uses: actions/setup-java@v4.0.0
+      with:
+        distribution: zulu
+        java-version: ''
+#     # 'sudo' was not transformed because there is no suitable equivalent in GitHub Actions
+    - run: true
+    - run: mvn -B -V clean install -DskipDistribution=true
+    - run: test ${TRAVIS_TEST_RESULT} -eq 0 && mvn -s etc/travis-settings.xml -DskipTests=true -DskipDistribution=true deploy
+      if: "${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}"
