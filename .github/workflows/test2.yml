@@ -1,0 +1,42 @@
+name: Tufuwu/test2
+on:
+  push:
+    branches:
+    - "**/*"
+  pull_request:
+concurrency:
+#   # This item has no matching transformer
+#   maximum_number_of_builds: 0
+jobs:
+  test:
+    runs-on: macos-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - uses: maxim-lobanov/setup-xcode@v1.6.0
+      with:
+        xcode-version: '9.4'
+#     # 'sudo' was not transformed because there is no suitable equivalent in GitHub Actions
+    - run: source .travis_support/install_miniconda.sh
+    - run: export CONDA_ENV_TYPE="tst_py${PYVER}"
+    - run: source .travis_support/create_env.sh
+    - run: pip install -e .
+    - run: coverage erase
+    - run: coverage run --source . setup.py test
+    - run: coverage report -m
+    - run: export CONDA_ENV_TYPE="dpl"
+      if: "${{ success() }}"
+    - run: source .travis_support/create_env.sh
+      if: "${{ success() }}"
+    - run: coveralls
+      if: "${{ success() }}"
+#     # This item has no matching transformer
+#     - email: false
+    strategy:
+      matrix:
+        PYVER:
+        - '38'
+        - '37'
+        - '36'
+    env:
+      PYVER: "${{ matrix.PYVER }}"
