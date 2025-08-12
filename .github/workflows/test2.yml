@@ -1,0 +1,1112 @@
+name: Tufuwu/test2
+on:
+  push:
+    branches:
+    - "**/*"
+  pull_request:
+concurrency:
+#   # This item has no matching transformer
+#   maximum_number_of_builds: 0
+jobs:
+  test:
+    runs-on: ubuntu-16.04
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - run: "./contrib/travis/install.sh"
+    - run: "./contrib/travis/test.sh"
+    - uses: rectalogic/notify-irc@v1
+      with:
+        server: irc.freenode.net
+        port: 6697
+        channel: django-guardian
+        nickname: Default nickname
+        message: Default message
+    strategy:
+      matrix: {}
+#       # 'allow_failures' transformations are currently unsupported.
+  test_2:
+    runs-on: ubuntu-16.04
+    env:
+      DJANGO_VERSION: 2.2.*
+      DATABASE_URL: postgres://postgres@/django_guardian
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: 3.5
+    - run: "./contrib/travis/install.sh"
+    - run: "./contrib/travis/test.sh"
+    - uses: rectalogic/notify-irc@v1
+      with:
+        server: irc.freenode.net
+        port: 6697
+        channel: django-guardian
+        nickname: Default nickname
+        message: Default message
+    services:
+      postgresql:
+        image: postgres:10
+  test_3:
+    runs-on: ubuntu-16.04
+    env:
+      DJANGO_VERSION: 2.2.*
+      DATABASE_URL: mysql://root:@localhost/django_guardian
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: 3.5
+#     # This item has no matching transformer
+#     - mariadb: '10.3'
+    - run: "./contrib/travis/install.sh"
+    - run: "./contrib/travis/test.sh"
+    - uses: rectalogic/notify-irc@v1
+      with:
+        server: irc.freenode.net
+        port: 6697
+        channel: django-guardian
+        nickname: Default nickname
+        message: Default message
+  test_4:
+    runs-on: ubuntu-16.04
+    env:
+      DJANGO_VERSION: 2.2.*
+      DATABASE_URL: sqlite://
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: 3.5
+    - run: "./contrib/travis/install.sh"
+    - run: "./contrib/travis/test.sh"
+    - uses: rectalogic/notify-irc@v1
+      with:
+        server: irc.freenode.net
+        port: 6697
+        channel: django-guardian
+        nickname: Default nickname
+        message: Default message
+  test_5:
+    runs-on: ubuntu-16.04
+    env:
+      DJANGO_VERSION: 2.2.*
+      DATABASE_URL: postgres://postgres@/django_guardian
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: 3.6
+    - run: "./contrib/travis/install.sh"
+    - run: "./contrib/travis/test.sh"
+    - uses: rectalogic/notify-irc@v1
+      with:
+        server: irc.freenode.net
+        port: 6697
+        channel: django-guardian
+        nickname: Default nickname
+        message: Default message
+    services:
+      postgresql:
+        image: postgres:10
+  test_6:
+    runs-on: ubuntu-16.04
+    env:
+      DJANGO_VERSION: 2.2.*
+      DATABASE_URL: mysql://root:@localhost/django_guardian
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: 3.6
+#     # This item has no matching transformer
+#     - mariadb: '10.3'
+    - run: "./contrib/travis/install.sh"
+    - run: "./contrib/travis/test.sh"
+    - uses: rectalogic/notify-irc@v1
+      with:
+        server: irc.freenode.net
+        port: 6697
+        channel: django-guardian
+        nickname: Default nickname
+        message: Default message
+  test_7:
+    runs-on: ubuntu-16.04
+    env:
+      DJANGO_VERSION: 2.2.*
+      DATABASE_URL: sqlite://
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: 3.6
+    - run: "./contrib/travis/install.sh"
+    - run: "./contrib/travis/test.sh"
+    - uses: rectalogic/notify-irc@v1
+      with:
+        server: irc.freenode.net
+        port: 6697
+        channel: django-guardian
+        nickname: Default nickname
+        message: Default message
+  test_8:
+    runs-on: ubuntu-16.04
+    env:
+      DJANGO_VERSION: 3.0.*
+      DATABASE_URL: postgres://postgres@/django_guardian
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: 3.6
+    - run: "./contrib/travis/install.sh"
+    - run: "./contrib/travis/test.sh"
+    - uses: rectalogic/notify-irc@v1
+      with:
+        server: irc.freenode.net
+        port: 6697
+        channel: django-guardian
+        nickname: Default nickname
+        message: Default message
+    services:
+      postgresql:
+        image: postgres:10
+  test_9:
+    runs-on: ubuntu-16.04
+    env:
+      DJANGO_VERSION: 3.0.*
+      DATABASE_URL: mysql://root:@localhost/django_guardian
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: 3.6
+#     # This item has no matching transformer
+#     - mariadb: '10.3'
+    - run: "./contrib/travis/install.sh"
+    - run: "./contrib/travis/test.sh"
+    - uses: rectalogic/notify-irc@v1
+      with:
+        server: irc.freenode.net
+        port: 6697
+        channel: django-guardian
+        nickname: Default nickname
+        message: Default message
+  test_10:
+    runs-on: ubuntu-16.04
+    env:
+      DJANGO_VERSION: 3.0.*
+      DATABASE_URL: sqlite://
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: 3.6
+    - run: "./contrib/travis/install.sh"
+    - run: "./contrib/travis/test.sh"
+    - uses: rectalogic/notify-irc@v1
+      with:
+        server: irc.freenode.net
+        port: 6697
+        channel: django-guardian
+        nickname: Default nickname
+        message: Default message
+  test_11:
+    runs-on: ubuntu-16.04
+    env:
+      DJANGO_VERSION: 3.1.*
+      DATABASE_URL: postgres://postgres@/django_guardian
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: 3.6
+    - run: "./contrib/travis/install.sh"
+    - run: "./contrib/travis/test.sh"
+    - uses: rectalogic/notify-irc@v1
+      with:
+        server: irc.freenode.net
+        port: 6697
+        channel: django-guardian
+        nickname: Default nickname
+        message: Default message
+    services:
+      postgresql:
+        image: postgres:10
+  test_12:
+    runs-on: ubuntu-16.04
+    env:
+      DJANGO_VERSION: 3.1.*
+      DATABASE_URL: mysql://root:@localhost/django_guardian
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: 3.6
+#     # This item has no matching transformer
+#     - mariadb: '10.3'
+    - run: "./contrib/travis/install.sh"
+    - run: "./contrib/travis/test.sh"
+    - uses: rectalogic/notify-irc@v1
+      with:
+        server: irc.freenode.net
+        port: 6697
+        channel: django-guardian
+        nickname: Default nickname
+        message: Default message
+  test_13:
+    runs-on: ubuntu-16.04
+    env:
+      DJANGO_VERSION: 3.1.*
+      DATABASE_URL: sqlite://
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: 3.6
+    - run: "./contrib/travis/install.sh"
+    - run: "./contrib/travis/test.sh"
+    - uses: rectalogic/notify-irc@v1
+      with:
+        server: irc.freenode.net
+        port: 6697
+        channel: django-guardian
+        nickname: Default nickname
+        message: Default message
+  test_14:
+    runs-on: ubuntu-16.04
+    env:
+      DJANGO_VERSION: 2.2.*
+      DATABASE_URL: postgres://postgres@/django_guardian
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: 3.7
+    - run: "./contrib/travis/install.sh"
+    - run: "./contrib/travis/test.sh"
+    - uses: rectalogic/notify-irc@v1
+      with:
+        server: irc.freenode.net
+        port: 6697
+        channel: django-guardian
+        nickname: Default nickname
+        message: Default message
+    services:
+      postgresql:
+        image: postgres:10
+  test_15:
+    runs-on: ubuntu-16.04
+    env:
+      DJANGO_VERSION: 2.2.*
+      DATABASE_URL: mysql://root:@localhost/django_guardian
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: 3.7
+#     # This item has no matching transformer
+#     - mariadb: '10.3'
+    - run: "./contrib/travis/install.sh"
+    - run: "./contrib/travis/test.sh"
+    - uses: rectalogic/notify-irc@v1
+      with:
+        server: irc.freenode.net
+        port: 6697
+        channel: django-guardian
+        nickname: Default nickname
+        message: Default message
+  test_16:
+    runs-on: ubuntu-16.04
+    env:
+      DJANGO_VERSION: 2.2.*
+      DATABASE_URL: sqlite://
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: 3.7
+    - run: "./contrib/travis/install.sh"
+    - run: "./contrib/travis/test.sh"
+    - uses: rectalogic/notify-irc@v1
+      with:
+        server: irc.freenode.net
+        port: 6697
+        channel: django-guardian
+        nickname: Default nickname
+        message: Default message
+  test_17:
+    runs-on: ubuntu-16.04
+    env:
+      DJANGO_VERSION: 3.0.*
+      DATABASE_URL: postgres://postgres@/django_guardian
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: 3.7
+    - run: "./contrib/travis/install.sh"
+    - run: "./contrib/travis/test.sh"
+    - uses: rectalogic/notify-irc@v1
+      with:
+        server: irc.freenode.net
+        port: 6697
+        channel: django-guardian
+        nickname: Default nickname
+        message: Default message
+    services:
+      postgresql:
+        image: postgres:10
+  test_18:
+    runs-on: ubuntu-16.04
+    env:
+      DJANGO_VERSION: 3.0.*
+      DATABASE_URL: mysql://root:@localhost/django_guardian
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: 3.7
+#     # This item has no matching transformer
+#     - mariadb: '10.3'
+    - run: "./contrib/travis/install.sh"
+    - run: "./contrib/travis/test.sh"
+    - uses: rectalogic/notify-irc@v1
+      with:
+        server: irc.freenode.net
+        port: 6697
+        channel: django-guardian
+        nickname: Default nickname
+        message: Default message
+  test_19:
+    runs-on: ubuntu-16.04
+    env:
+      DJANGO_VERSION: 3.0.*
+      DATABASE_URL: sqlite://
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: 3.7
+    - run: "./contrib/travis/install.sh"
+    - run: "./contrib/travis/test.sh"
+    - uses: rectalogic/notify-irc@v1
+      with:
+        server: irc.freenode.net
+        port: 6697
+        channel: django-guardian
+        nickname: Default nickname
+        message: Default message
+  test_20:
+    runs-on: ubuntu-16.04
+    env:
+      DJANGO_VERSION: 3.1.*
+      DATABASE_URL: postgres://postgres@/django_guardian
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: 3.7
+    - run: "./contrib/travis/install.sh"
+    - run: "./contrib/travis/test.sh"
+    - uses: rectalogic/notify-irc@v1
+      with:
+        server: irc.freenode.net
+        port: 6697
+        channel: django-guardian
+        nickname: Default nickname
+        message: Default message
+    services:
+      postgresql:
+        image: postgres:10
+  test_21:
+    runs-on: ubuntu-16.04
+    env:
+      DJANGO_VERSION: 3.1.*
+      DATABASE_URL: mysql://root:@localhost/django_guardian
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: 3.7
+#     # This item has no matching transformer
+#     - mariadb: '10.3'
+    - run: "./contrib/travis/install.sh"
+    - run: "./contrib/travis/test.sh"
+    - uses: rectalogic/notify-irc@v1
+      with:
+        server: irc.freenode.net
+        port: 6697
+        channel: django-guardian
+        nickname: Default nickname
+        message: Default message
+  test_22:
+    runs-on: ubuntu-16.04
+    env:
+      DJANGO_VERSION: 3.1.*
+      DATABASE_URL: sqlite://
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: 3.7
+    - run: "./contrib/travis/install.sh"
+    - run: "./contrib/travis/test.sh"
+    - uses: rectalogic/notify-irc@v1
+      with:
+        server: irc.freenode.net
+        port: 6697
+        channel: django-guardian
+        nickname: Default nickname
+        message: Default message
+  test_23:
+    runs-on: ubuntu-16.04
+    env:
+      DJANGO_VERSION: 2.2.*
+      DATABASE_URL: postgres://postgres@/django_guardian
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: 3.8
+    - run: "./contrib/travis/install.sh"
+    - run: "./contrib/travis/test.sh"
+    - uses: rectalogic/notify-irc@v1
+      with:
+        server: irc.freenode.net
+        port: 6697
+        channel: django-guardian
+        nickname: Default nickname
+        message: Default message
+    services:
+      postgresql:
+        image: postgres:10
+  test_24:
+    runs-on: ubuntu-16.04
+    env:
+      DJANGO_VERSION: 2.2.*
+      DATABASE_URL: mysql://root:@localhost/django_guardian
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: 3.8
+#     # This item has no matching transformer
+#     - mariadb: '10.3'
+    - run: "./contrib/travis/install.sh"
+    - run: "./contrib/travis/test.sh"
+    - uses: rectalogic/notify-irc@v1
+      with:
+        server: irc.freenode.net
+        port: 6697
+        channel: django-guardian
+        nickname: Default nickname
+        message: Default message
+  test_25:
+    runs-on: ubuntu-16.04
+    env:
+      DJANGO_VERSION: 2.2.*
+      DATABASE_URL: sqlite://
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: 3.8
+    - run: "./contrib/travis/install.sh"
+    - run: "./contrib/travis/test.sh"
+    - uses: rectalogic/notify-irc@v1
+      with:
+        server: irc.freenode.net
+        port: 6697
+        channel: django-guardian
+        nickname: Default nickname
+        message: Default message
+  test_26:
+    runs-on: ubuntu-16.04
+    env:
+      DJANGO_VERSION: 3.0.*
+      DATABASE_URL: postgres://postgres@/django_guardian
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: 3.8
+    - run: "./contrib/travis/install.sh"
+    - run: "./contrib/travis/test.sh"
+    - uses: rectalogic/notify-irc@v1
+      with:
+        server: irc.freenode.net
+        port: 6697
+        channel: django-guardian
+        nickname: Default nickname
+        message: Default message
+    services:
+      postgresql:
+        image: postgres:10
+  test_27:
+    runs-on: ubuntu-16.04
+    env:
+      DJANGO_VERSION: 3.0.*
+      DATABASE_URL: mysql://root:@localhost/django_guardian
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: 3.8
+#     # This item has no matching transformer
+#     - mariadb: '10.3'
+    - run: "./contrib/travis/install.sh"
+    - run: "./contrib/travis/test.sh"
+    - uses: rectalogic/notify-irc@v1
+      with:
+        server: irc.freenode.net
+        port: 6697
+        channel: django-guardian
+        nickname: Default nickname
+        message: Default message
+  test_28:
+    runs-on: ubuntu-16.04
+    env:
+      DJANGO_VERSION: 3.0.*
+      DATABASE_URL: sqlite://
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: 3.8
+    - run: "./contrib/travis/install.sh"
+    - run: "./contrib/travis/test.sh"
+    - uses: rectalogic/notify-irc@v1
+      with:
+        server: irc.freenode.net
+        port: 6697
+        channel: django-guardian
+        nickname: Default nickname
+        message: Default message
+  test_29:
+    runs-on: ubuntu-16.04
+    env:
+      DJANGO_VERSION: 3.1.*
+      DATABASE_URL: postgres://postgres@/django_guardian
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: 3.8
+    - run: "./contrib/travis/install.sh"
+    - run: "./contrib/travis/test.sh"
+    - uses: rectalogic/notify-irc@v1
+      with:
+        server: irc.freenode.net
+        port: 6697
+        channel: django-guardian
+        nickname: Default nickname
+        message: Default message
+    services:
+      postgresql:
+        image: postgres:10
+  test_30:
+    runs-on: ubuntu-16.04
+    env:
+      DJANGO_VERSION: 3.1.*
+      DATABASE_URL: mysql://root:@localhost/django_guardian
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: 3.8
+#     # This item has no matching transformer
+#     - mariadb: '10.3'
+    - run: "./contrib/travis/install.sh"
+    - run: "./contrib/travis/test.sh"
+    - uses: rectalogic/notify-irc@v1
+      with:
+        server: irc.freenode.net
+        port: 6697
+        channel: django-guardian
+        nickname: Default nickname
+        message: Default message
+  test_31:
+    runs-on: ubuntu-16.04
+    env:
+      DJANGO_VERSION: 3.1.*
+      DATABASE_URL: sqlite://
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: 3.8
+    - run: "./contrib/travis/install.sh"
+    - run: "./contrib/travis/test.sh"
+    - uses: rectalogic/notify-irc@v1
+      with:
+        server: irc.freenode.net
+        port: 6697
+        channel: django-guardian
+        nickname: Default nickname
+        message: Default message
+  test_32:
+    runs-on: ubuntu-16.04
+    env:
+      DJANGO_VERSION: master
+      DATABASE_URL: postgres://postgres@/django_guardian
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: 3.8
+    - run: "./contrib/travis/install.sh"
+    - run: "./contrib/travis/test.sh"
+    - uses: rectalogic/notify-irc@v1
+      with:
+        server: irc.freenode.net
+        port: 6697
+        channel: django-guardian
+        nickname: Default nickname
+        message: Default message
+    services:
+      postgresql:
+        image: postgres:10
+  test_33:
+    runs-on: ubuntu-16.04
+    env:
+      DJANGO_VERSION: master
+      DATABASE_URL: mysql://root:@localhost/django_guardian
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: 3.8
+#     # This item has no matching transformer
+#     - mariadb: '10.3'
+    - run: "./contrib/travis/install.sh"
+    - run: "./contrib/travis/test.sh"
+    - uses: rectalogic/notify-irc@v1
+      with:
+        server: irc.freenode.net
+        port: 6697
+        channel: django-guardian
+        nickname: Default nickname
+        message: Default message
+  test_34:
+    runs-on: ubuntu-16.04
+    env:
+      DJANGO_VERSION: master
+      DATABASE_URL: sqlite://
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: 3.8
+    - run: "./contrib/travis/install.sh"
+    - run: "./contrib/travis/test.sh"
+    - uses: rectalogic/notify-irc@v1
+      with:
+        server: irc.freenode.net
+        port: 6697
+        channel: django-guardian
+        nickname: Default nickname
+        message: Default message
+  test_35:
+    runs-on: ubuntu-16.04
+    env:
+      DJANGO_VERSION: 3.1.*
+      DATABASE_URL: postgres://postgres@/django_guardian
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: 3.9-dev
+    - run: "./contrib/travis/install.sh"
+    - run: "./contrib/travis/test.sh"
+    - uses: rectalogic/notify-irc@v1
+      with:
+        server: irc.freenode.net
+        port: 6697
+        channel: django-guardian
+        nickname: Default nickname
+        message: Default message
+    services:
+      postgresql:
+        image: postgres:10
+  test_36:
+    runs-on: ubuntu-16.04
+    env:
+      DJANGO_VERSION: 3.1.*
+      DATABASE_URL: mysql://root:@localhost/django_guardian
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: 3.9-dev
+#     # This item has no matching transformer
+#     - mariadb: '10.3'
+    - run: "./contrib/travis/install.sh"
+    - run: "./contrib/travis/test.sh"
+    - uses: rectalogic/notify-irc@v1
+      with:
+        server: irc.freenode.net
+        port: 6697
+        channel: django-guardian
+        nickname: Default nickname
+        message: Default message
+  test_37:
+    runs-on: ubuntu-16.04
+    env:
+      DJANGO_VERSION: 3.1.*
+      DATABASE_URL: sqlite://
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: 3.9-dev
+    - run: "./contrib/travis/install.sh"
+    - run: "./contrib/travis/test.sh"
+    - uses: rectalogic/notify-irc@v1
+      with:
+        server: irc.freenode.net
+        port: 6697
+        channel: django-guardian
+        nickname: Default nickname
+        message: Default message
+  test_38:
+    runs-on: ubuntu-16.04
+    env:
+      DJANGO_VERSION: master
+      DATABASE_URL: postgres://postgres@/django_guardian
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: 3.9-dev
+    - run: "./contrib/travis/install.sh"
+    - run: "./contrib/travis/test.sh"
+    - uses: rectalogic/notify-irc@v1
+      with:
+        server: irc.freenode.net
+        port: 6697
+        channel: django-guardian
+        nickname: Default nickname
+        message: Default message
+    services:
+      postgresql:
+        image: postgres:10
+  test_39:
+    runs-on: ubuntu-16.04
+    env:
+      DJANGO_VERSION: master
+      DATABASE_URL: mysql://root:@localhost/django_guardian
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: 3.9-dev
+#     # This item has no matching transformer
+#     - mariadb: '10.3'
+    - run: "./contrib/travis/install.sh"
+    - run: "./contrib/travis/test.sh"
+    - uses: rectalogic/notify-irc@v1
+      with:
+        server: irc.freenode.net
+        port: 6697
+        channel: django-guardian
+        nickname: Default nickname
+        message: Default message
+  test_40:
+    runs-on: ubuntu-16.04
+    env:
+      DJANGO_VERSION: master
+      DATABASE_URL: sqlite://
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: 3.9-dev
+    - run: "./contrib/travis/install.sh"
+    - run: "./contrib/travis/test.sh"
+    - uses: rectalogic/notify-irc@v1
+      with:
+        server: irc.freenode.net
+        port: 6697
+        channel: django-guardian
+        nickname: Default nickname
+        message: Default message
