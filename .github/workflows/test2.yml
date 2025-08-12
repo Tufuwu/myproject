@@ -1,0 +1,70 @@
+name: Tufuwu/test2
+on:
+  push:
+    branches:
+    - "**/*"
+  pull_request:
+concurrency:
+#   # This item has no matching transformer
+#   maximum_number_of_builds: 0
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: "${{ matrix.python }}"
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - run: travis_retry pip install tox-travis codecov
+    - run: python --version
+    - run: tox -a
+    - run: tox -v
+    - run: codecov
+      if: "${{ success() }}"
+    strategy:
+      matrix:
+        python:
+        - 3.5
+        - 3.6
+        - 3.7
+        - 3.8
+  deploy:
+    needs:
+    - test
+    runs-on: ubuntu-latest
+    if: ${{ github.ref }}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up pip cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.cache/pip"
+        key: "${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        restore-keys: "${{ runner.os }}-pip-"
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: 3.8
+    - run: travis_retry pip install tox-travis codecov
+    - run: skip
+#     # This item has no matching transformer
+#     - pypi:
+#         provider: pypi
+#         user: jazzband
+#         server: https://jazzband.co/projects/django-simple-history/upload
+#         distributions: sdist bdist_wheel
+#         password:
+#           secure: aFt6pFTwuzSZnYqQpdO9UKtsLplWIBhI7iwH7/aeH2B0hNCvr5pYfZ2UWvQqNh3aIXoJOoIAN5+Na+YGzY+Y54ZAaFAlEtfEiuXe1APuJ0hLuNvo1IJ/t4ABS2aN4W1HEaoVBaykUNHns+Vo3yfIesK4m9qk5TFuMMbdA6vTxg4=
+#         'on':
+#           tags: true
+#           repo: jazzband/django-simple-history
+#       if: "${{ github.event_name == 'push' && ${{ github.ref }} }}"
+    - run: codecov
+      if: "${{ success() }}"
