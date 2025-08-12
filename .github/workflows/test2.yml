@@ -1,0 +1,43 @@
+name: Tufuwu/test2
+on:
+  push:
+    branches:
+    - "**/*"
+    - "!/^dependabot/.*/"
+  pull_request:
+concurrency:
+#   # This item has no matching transformer
+#   maximum_number_of_builds: 0
+jobs:
+  test:
+    runs-on: ubuntu-16.04
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: "${{ matrix.python }}"
+    - run: pip install -r requirements.txt
+    - run: ci/travis.sh
+    strategy:
+      matrix:
+        python:
+        - '2.7'
+        - '3.5'
+        - '3.6'
+        - '3.7'
+        - '3.8'
+        - pypy
+        - pypy3
+  test_2:
+    runs-on: ubuntu-16.04
+    env:
+      OLD_CRYPTOGRAPHY: 2.6.1
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: '3.8'
+    - run: pip install -r requirements.txt
+    - run: ci/travis.sh
