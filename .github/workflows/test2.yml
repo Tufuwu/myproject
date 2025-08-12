@@ -1,0 +1,316 @@
+name: Tufuwu/test2
+on:
+  push:
+    branches:
+    - "**/*"
+  pull_request:
+concurrency:
+#   # This item has no matching transformer
+#   maximum_number_of_builds: 0
+jobs:
+  test:
+    runs-on: ubuntu-18.04
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: '3.7'
+    - run: apt-get -y install httpie jq
+#     # 'sudo' was not transformed because there is no suitable equivalent in GitHub Actions
+    - run: ".travis/before_install.sh"
+    - run: ".travis/install.sh"
+    - run: ".travis/before_script.sh"
+    - run: ".travis/script.sh"
+    - run: http --timeout 30 --check-status --pretty format --print hb http://pulp/pulp/api/v3/status/
+      if: "${{ failure() }}"
+    - run: docker images
+      if: "${{ failure() }}"
+    - run: docker ps -a
+      if: "${{ failure() }}"
+    - run: docker logs pulp
+      if: "${{ failure() }}"
+    - uses: rectalogic/notify-irc@v1
+      if: "${{ github.event_name != 'pull_request' }}"
+      with:
+        server: chat.freenode.net
+        port: 6697
+        channel: pulp-build
+        nickname: Default nickname
+        message: |-
+          %{repository_slug}#%{build_number} (%{branch} - %{commit} : %{author} : %{commit_subject})
+          Change view : %{compare_url}
+          Build details : %{build_url}
+          %{message}
+    strategy:
+      matrix:
+        TEST:
+        - pulp
+        - docs
+        - bindings
+        - s3
+    services:
+#       # This item has no matching transformer
+#       docker:
+    env:
+      TEST: "${{ matrix.TEST }}"
+  Deploy_plugin_to_pypi:
+    needs:
+    - test
+    runs-on: ubuntu-18.04
+    if: ${{ github.ref }}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: '3.7'
+    - run: apt-get -y install httpie jq
+#     # 'sudo' was not transformed because there is no suitable equivalent in GitHub Actions
+    - run: skip
+    - run: skip
+    - run: skip
+    - run: bash .travis/publish_plugin_pypi.sh
+    - run: http --timeout 30 --check-status --pretty format --print hb http://pulp/pulp/api/v3/status/
+      if: "${{ failure() }}"
+    - run: docker images
+      if: "${{ failure() }}"
+    - run: docker ps -a
+      if: "${{ failure() }}"
+    - run: docker logs pulp
+      if: "${{ failure() }}"
+    - uses: rectalogic/notify-irc@v1
+      if: "${{ github.event_name != 'pull_request' }}"
+      with:
+        server: chat.freenode.net
+        port: 6697
+        channel: pulp-build
+        nickname: Default nickname
+        message: |-
+          %{repository_slug}#%{build_number} (%{branch} - %{commit} : %{author} : %{commit_subject})
+          Change view : %{compare_url}
+          Build details : %{build_url}
+          %{message}
+    services:
+#       # This item has no matching transformer
+#       docker:
+  Publish_client_to_rubygems:
+    needs:
+    - test
+    runs-on: ubuntu-18.04
+    env:
+      TEST: bindings
+    if: ${{ github.ref }}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: '3.7'
+    - run: apt-get -y install httpie jq
+#     # 'sudo' was not transformed because there is no suitable equivalent in GitHub Actions
+    - run: ".travis/before_install.sh"
+    - run: ".travis/install.sh"
+    - run: ".travis/before_script.sh"
+    - run: bash .travis/publish_client_gem.sh
+    - run: http --timeout 30 --check-status --pretty format --print hb http://pulp/pulp/api/v3/status/
+      if: "${{ failure() }}"
+    - run: docker images
+      if: "${{ failure() }}"
+    - run: docker ps -a
+      if: "${{ failure() }}"
+    - run: docker logs pulp
+      if: "${{ failure() }}"
+    - uses: rectalogic/notify-irc@v1
+      if: "${{ github.event_name != 'pull_request' }}"
+      with:
+        server: chat.freenode.net
+        port: 6697
+        channel: pulp-build
+        nickname: Default nickname
+        message: |-
+          %{repository_slug}#%{build_number} (%{branch} - %{commit} : %{author} : %{commit_subject})
+          Change view : %{compare_url}
+          Build details : %{build_url}
+          %{message}
+    services:
+#       # This item has no matching transformer
+#       docker:
+  Publish_client_to_pypi:
+    needs:
+    - test
+    runs-on: ubuntu-18.04
+    env:
+      TEST: bindings
+    if: ${{ github.ref }}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: '3.7'
+    - run: apt-get -y install httpie jq
+#     # 'sudo' was not transformed because there is no suitable equivalent in GitHub Actions
+    - run: ".travis/before_install.sh"
+    - run: ".travis/install.sh"
+    - run: ".travis/before_script.sh"
+    - run: bash .travis/publish_client_pypi.sh
+    - run: http --timeout 30 --check-status --pretty format --print hb http://pulp/pulp/api/v3/status/
+      if: "${{ failure() }}"
+    - run: docker images
+      if: "${{ failure() }}"
+    - run: docker ps -a
+      if: "${{ failure() }}"
+    - run: docker logs pulp
+      if: "${{ failure() }}"
+    - uses: rectalogic/notify-irc@v1
+      if: "${{ github.event_name != 'pull_request' }}"
+      with:
+        server: chat.freenode.net
+        port: 6697
+        channel: pulp-build
+        nickname: Default nickname
+        message: |-
+          %{repository_slug}#%{build_number} (%{branch} - %{commit} : %{author} : %{commit_subject})
+          Change view : %{compare_url}
+          Build details : %{build_url}
+          %{message}
+    services:
+#       # This item has no matching transformer
+#       docker:
+  publish_tagged_docs:
+    needs:
+    - test
+    - Deploy_plugin_to_pypi
+    - Publish_client_to_rubygems
+    - Publish_client_to_pypi
+    runs-on: ubuntu-18.04
+    env:
+      TEST: docs
+    if: ${{ github.ref }}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: '3.7'
+    - run: apt-get -y install httpie jq
+#     # 'sudo' was not transformed because there is no suitable equivalent in GitHub Actions
+    - run: ".travis/before_install.sh"
+    - run: ".travis/install.sh"
+    - run: ".travis/before_script.sh"
+    - run: bash .travis/publish_docs.sh tag
+    - run: http --timeout 30 --check-status --pretty format --print hb http://pulp/pulp/api/v3/status/
+      if: "${{ failure() }}"
+    - run: docker images
+      if: "${{ failure() }}"
+    - run: docker ps -a
+      if: "${{ failure() }}"
+    - run: docker logs pulp
+      if: "${{ failure() }}"
+    - uses: rectalogic/notify-irc@v1
+      if: "${{ github.event_name != 'pull_request' }}"
+      with:
+        server: chat.freenode.net
+        port: 6697
+        channel: pulp-build
+        nickname: Default nickname
+        message: |-
+          %{repository_slug}#%{build_number} (%{branch} - %{commit} : %{author} : %{commit_subject})
+          Change view : %{compare_url}
+          Build details : %{build_url}
+          %{message}
+    services:
+#       # This item has no matching transformer
+#       docker:
+  publish_continuous_docs:
+    needs:
+    - test
+    - Deploy_plugin_to_pypi
+    - Publish_client_to_rubygems
+    - Publish_client_to_pypi
+    - publish_tagged_docs
+    runs-on: ubuntu-18.04
+    env:
+      TEST: docs
+    if: ${{ github.event_name != 'pull_request' && github.repository == pulp/pulpcore && github.ref == 'refs/heads/master' }}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: '3.7'
+    - run: apt-get -y install httpie jq
+#     # 'sudo' was not transformed because there is no suitable equivalent in GitHub Actions
+    - run: ".travis/before_install.sh"
+    - run: ".travis/install.sh"
+    - run: ".travis/before_script.sh"
+    - run: bash .travis/publish_docs.sh nightly
+    - run: http --timeout 30 --check-status --pretty format --print hb http://pulp/pulp/api/v3/status/
+      if: "${{ failure() }}"
+    - run: docker images
+      if: "${{ failure() }}"
+    - run: docker ps -a
+      if: "${{ failure() }}"
+    - run: docker logs pulp
+      if: "${{ failure() }}"
+    - uses: rectalogic/notify-irc@v1
+      if: "${{ github.event_name != 'pull_request' }}"
+      with:
+        server: chat.freenode.net
+        port: 6697
+        channel: pulp-build
+        nickname: Default nickname
+        message: |-
+          %{repository_slug}#%{build_number} (%{branch} - %{commit} : %{author} : %{commit_subject})
+          Change view : %{compare_url}
+          Build details : %{build_url}
+          %{message}
+    services:
+#       # This item has no matching transformer
+#       docker:
+  update_redmine:
+    needs:
+    - test
+    - Deploy_plugin_to_pypi
+    - Publish_client_to_rubygems
+    - Publish_client_to_pypi
+    - publish_tagged_docs
+    - publish_continuous_docs
+    runs-on: ubuntu-18.04
+    if: ${{ github.ref }}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: '3.7'
+    - run: apt-get -y install httpie jq
+#     # 'sudo' was not transformed because there is no suitable equivalent in GitHub Actions
+    - run: skip
+    - run: skip
+    - run: skip
+    - run: bash .travis/update_redmine.sh
+    - run: http --timeout 30 --check-status --pretty format --print hb http://pulp/pulp/api/v3/status/
+      if: "${{ failure() }}"
+    - run: docker images
+      if: "${{ failure() }}"
+    - run: docker ps -a
+      if: "${{ failure() }}"
+    - run: docker logs pulp
+      if: "${{ failure() }}"
+    - uses: rectalogic/notify-irc@v1
+      if: "${{ github.event_name != 'pull_request' }}"
+      with:
+        server: chat.freenode.net
+        port: 6697
+        channel: pulp-build
+        nickname: Default nickname
+        message: |-
+          %{repository_slug}#%{build_number} (%{branch} - %{commit} : %{author} : %{commit_subject})
+          Change view : %{compare_url}
+          Build details : %{build_url}
+          %{message}
+    services:
+#       # This item has no matching transformer
+#       docker:
