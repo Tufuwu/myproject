@@ -1,0 +1,38 @@
+name: Tufuwu/test2
+on:
+  push:
+    branches:
+    - "**/*"
+  pull_request:
+concurrency:
+#   # This item has no matching transformer
+#   maximum_number_of_builds: 0
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - uses: maxim-lobanov/setup-xcode@v1.6.0
+      with:
+        xcode-version: '12.2'
+    - name: Set up cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: node_modules
+        key: "${{ runner.os }}-path"
+    - uses: actions/setup-node@v4.0.0
+      with:
+        cache: npm
+    - run: npm install -g codecov
+    - run: npm install
+    - run: npm run build
+    - run: npm run test
+    - run: codecov
+    - run: if [[ "${{ runner.os }}" == "linux" ]]; then npm run dist; fi
+    - run: if [[ "${{ runner.os }}" == "osx" ]]; then npm run dist -- --mac --win; fi
+    strategy:
+      matrix:
+        os:
+        - ubuntu-latest
+        - macos-latest
