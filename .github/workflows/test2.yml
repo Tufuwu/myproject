@@ -1,0 +1,316 @@
+name: Tufuwu/test2
+on:
+  push:
+    branches:
+    - "**/*"
+  pull_request:
+concurrency:
+#   # This item has no matching transformer
+#   maximum_number_of_builds: 0
+env:
+  PR_TITLE: "$(curl https://github.com/${{ github.repository_owner/github.repository }}/pull/${{ github.event.number }} 2> /dev/null | grep title | head -1)"
+jobs:
+  Lint:
+    runs-on: # this agent type is not supported: [[{"dist"=>"jammy"}]]
+             ubuntu-latest
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up npm cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.npm"
+        key: "${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}"
+        restore-keys: "${{ runner.os }}-node-"
+    - run: npm install
+    - run: yarn lint
+  Generate_Sprite_and_Palette:
+    runs-on: # this agent type is not supported: [[{"dist"=>"jammy"}]]
+             ubuntu-latest
+    if: ${{ !contains(fromJson('["pull_request"]'), github.event_name) }}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up npm cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.npm"
+        key: "${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}"
+        restore-keys: "${{ runner.os }}-node-"
+    - run: npm install
+    - run: yarn makeSpriteAndPalette
+  Build_JS:
+    needs:
+    - Lint
+    - Generate_Sprite_and_Palette
+    runs-on: # this agent type is not supported: [[{"dist"=>"jammy"}]]
+             ubuntu-latest
+    if: ${{ !contains(fromJson('["pull_request"]'), github.event_name) }}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up npm cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.npm"
+        key: "${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}"
+        restore-keys: "${{ runner.os }}-node-"
+    - run: npm install
+    - run: yarn build
+  Build_CSS:
+    needs:
+    - Lint
+    - Generate_Sprite_and_Palette
+    runs-on: # this agent type is not supported: [[{"dist"=>"jammy"}]]
+             ubuntu-latest
+    if: ${{ !contains(fromJson('["pull_request"]'), github.event_name) }}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up npm cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.npm"
+        key: "${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}"
+        restore-keys: "${{ runner.os }}-node-"
+    - run: npm install
+    - run: yarn build:css:all
+  Build_docs:
+    needs:
+    - Lint
+    - Generate_Sprite_and_Palette
+    - Build_JS
+    - Build_CSS
+    runs-on: # this agent type is not supported: [[{"dist"=>"jammy"}]]
+             ubuntu-latest
+    if: ${{ !contains(fromJson('["pull_request"]'), github.event_name) }}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up npm cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.npm"
+        key: "${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}"
+        restore-keys: "${{ runner.os }}-node-"
+    - run: npm install
+    - run: yarn build:doc:react
+    - run: yarn build:doc:kss
+  Tests_without_snapshots:
+    needs:
+    - Lint
+    - Generate_Sprite_and_Palette
+    - Build_JS
+    - Build_CSS
+    - Build_docs
+    runs-on: # this agent type is not supported: [[{"dist"=>"jammy"}]]
+             ubuntu-latest
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up npm cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.npm"
+        key: "${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}"
+        restore-keys: "${{ runner.os }}-node-"
+    - run: npm install
+    - run: yarn test:noSnapshots
+  Tests_snapshots:
+    needs:
+    - Lint
+    - Generate_Sprite_and_Palette
+    - Build_JS
+    - Build_CSS
+    - Build_docs
+    runs-on: # this agent type is not supported: [[{"dist"=>"jammy"}]]
+             ubuntu-latest
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up npm cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.npm"
+        key: "${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}"
+        restore-keys: "${{ runner.os }}-node-"
+    - run: npm install
+    - run: yarn test:snapshots
+  Bundlemon:
+    needs:
+    - Lint
+    - Generate_Sprite_and_Palette
+    - Build_JS
+    - Build_CSS
+    - Build_docs
+    runs-on: # this agent type is not supported: [[{"dist"=>"jammy"}]]
+             ubuntu-latest
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up npm cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.npm"
+        key: "${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}"
+        restore-keys: "${{ runner.os }}-node-"
+    - run: npm install
+    - run: yarn bundlemon
+  _Argos_Create_desktop_screenshots:
+    needs:
+    - Lint
+    - Generate_Sprite_and_Palette
+    - Build_JS
+    - Build_CSS
+    - Build_docs
+    - Tests_without_snapshots
+    - Tests_snapshots
+    - Bundlemon
+    runs-on: # this agent type is not supported: [[{"dist"=>"jammy"}]]
+             ubuntu-latest
+    if: ${{ !contains(fromJson('["pull_request"]'), github.event_name) }}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up npm cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.npm"
+        key: "${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}"
+        restore-keys: "${{ runner.os }}-node-"
+    - run: npm install
+    - run: |
+        if [[ "${PR_TITLE}" != *"[skip argos]"* ]]; then
+          mkdir ./screenshots
+          npx puppeteer browsers install chrome
+          yarn screenshots --mode react --viewport desktop --screenshot-dir ./screenshots/reactDesktop
+        fi
+  _Argos_Create_mobile_screenshots:
+    needs:
+    - Lint
+    - Generate_Sprite_and_Palette
+    - Build_JS
+    - Build_CSS
+    - Build_docs
+    - Tests_without_snapshots
+    - Tests_snapshots
+    - Bundlemon
+    runs-on: # this agent type is not supported: [[{"dist"=>"jammy"}]]
+             ubuntu-latest
+    if: ${{ !contains(fromJson('["pull_request"]'), github.event_name) }}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up npm cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.npm"
+        key: "${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}"
+        restore-keys: "${{ runner.os }}-node-"
+    - run: npm install
+    - run: |
+        if [[ "${PR_TITLE}" != *"[skip argos]"* ]]; then
+          mkdir ./screenshots
+          npx puppeteer browsers install chrome
+          yarn screenshots --mode react --viewport 300x600 --screenshot-dir ./screenshots/reactMobile
+        fi
+  _Argos_Create_kss_screenshots:
+    needs:
+    - Lint
+    - Generate_Sprite_and_Palette
+    - Build_JS
+    - Build_CSS
+    - Build_docs
+    - Tests_without_snapshots
+    - Tests_snapshots
+    - Bundlemon
+    runs-on: # this agent type is not supported: [[{"dist"=>"jammy"}]]
+             ubuntu-latest
+    if: ${{ !contains(fromJson('["pull_request"]'), github.event_name) }}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up npm cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.npm"
+        key: "${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}"
+        restore-keys: "${{ runner.os }}-node-"
+    - run: npm install
+    - run: |
+        if [[ "${PR_TITLE}" != *"[skip argos]"* ]]; then
+          mkdir ./screenshots
+          npx puppeteer browsers install chrome
+          yarn screenshots --mode kss --screenshot-dir ./screenshots/kss
+        fi
+  _Argos_Upload_all_screenshots:
+    needs:
+    - Lint
+    - Generate_Sprite_and_Palette
+    - Build_JS
+    - Build_CSS
+    - Build_docs
+    - Tests_without_snapshots
+    - Tests_snapshots
+    - Bundlemon
+    - _Argos_Create_desktop_screenshots
+    - _Argos_Create_mobile_screenshots
+    - _Argos_Create_kss_screenshots
+    runs-on: # this agent type is not supported: [[{"dist"=>"jammy"}]]
+             ubuntu-latest
+    if: ${{ !contains(fromJson('["pull_request"]'), github.event_name) }}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up npm cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.npm"
+        key: "${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}"
+        restore-keys: "${{ runner.os }}-node-"
+    - run: npm install
+    - run: |
+        if [[ "${PR_TITLE}" != *"[skip argos]"* ]]; then
+          yarn argos:upload --parallel screenshots/reactDesktop/ --token $ARGOS_TOKEN  --parallel-total 3 --parallel-nonce ${{ github.run_number }} --ignore ''
+          yarn argos:upload --parallel screenshots/reactMobile/ --token $ARGOS_TOKEN  --parallel-total 3 --parallel-nonce ${{ github.run_number }} --ignore ''
+          yarn argos:upload --parallel screenshots/kss/ --token $ARGOS_TOKEN  --parallel-total 3 --parallel-nonce ${{ github.run_number }} --ignore ''
+        fi
+  Deploy:
+    needs:
+    - Lint
+    - Generate_Sprite_and_Palette
+    - Build_JS
+    - Build_CSS
+    - Build_docs
+    - Tests_without_snapshots
+    - Tests_snapshots
+    - Bundlemon
+    - _Argos_Create_desktop_screenshots
+    - _Argos_Create_mobile_screenshots
+    - _Argos_Create_kss_screenshots
+    - _Argos_Upload_all_screenshots
+    runs-on: # this agent type is not supported: [[{"dist"=>"jammy"}]]
+             ubuntu-latest
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up npm cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: "~/.npm"
+        key: "${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}"
+        restore-keys: "${{ runner.os }}-node-"
+    - run: npm install
+    - run: 'true'
+    - run: yarn deploy:doc -- --username cozycloud --email contact@cozycloud.cc --repo https://cozy-bot:$GH_TOKEN@github.com/cozy/cozy-ui.git && yarn semantic-release
+      if: "${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}"
