@@ -1,0 +1,55 @@
+name: Tufuwu/test2
+on:
+  push:
+    branches:
+    - "**/*"
+  pull_request:
+concurrency:
+#   # This item has no matching transformer
+#   maximum_number_of_builds: 0
+env:
+  SKIP_SASS_BINARY_DOWNLOAD_FOR_CI: 'true'
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: Set up cache
+      uses: actions/cache@v3.3.2
+      with:
+        path: |-
+          ${{ github.workspace }}/.node-gyp
+          ${{ github.workspace }}/.npm
+        key: "${{ runner.os }}-path"
+    - run: apt-get -y install gcc-4.7 g++-4.7
+#     # 'sudo' was not transformed because there is no suitable equivalent in GitHub Actions
+#     # 'compiler' was not transformed because there is no suitable equivalent in GitHub Actions
+    - run: git submodule update --init --recursive
+    - run: git clone https://github.com/creationix/nvm.git ./.nvm
+    - run: source ./.nvm/nvm.sh
+    - run: nvm install $NODE_VERSION
+    - run: nvm use $NODE_VERSION
+    - run: npm config set python `which python`
+    - run: if [ ${{ runner.os }} == "linux" ]; then export CC="gcc-4.7"; export CXX="g++-4.7"; export LINK="gcc-4.7"; export LINKXX="g++-4.7"; sudo apt install build-essential checkinstall libssl-dev; fi
+    - run: gcc --version
+    - run: g++ --version
+    - run: rm package-lock.json
+    - run: npm cache clean --f
+    - run: rm -rf node_modules
+    - run: npm install -g npm@latest-6
+    - run: npm install -g grunt-cli
+    - run: npm install -g eslint
+    - run: npm install
+    - run: npm test
+    strategy:
+      matrix:
+        os:
+        - ubuntu-latest
+        - macos-latest
+        include:
+        - NODE_VERSION: '6'
+          export:
+    env:
+      NODE_VERSION: "${{ matrix.NODE_VERSION }}"
+      EXPORT: "${{ matrix.export }}"
