@@ -1,0 +1,33 @@
+name: Tufuwu/test2
+on:
+  push:
+    branches:
+    - "**/*"
+  pull_request:
+concurrency:
+#   # This item has no matching transformer
+#   maximum_number_of_builds: 0
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - uses: actions/setup-node@v4.0.0
+      with:
+        cache: npm
+        node-version: '10'
+    - run: apt-get -y install g++-4.8
+    - run: sudo apt-get update -qq
+    - run: sudo apt-get install -qq libcairo2-dev libjpeg8-dev libpango1.0-dev libgif-dev build-essential g++
+    - run: sudo apt-get install -qq xvfb libgles2-mesa-dev libgbm-dev libxxf86vm-dev
+    - run: npm install
+    - run: wget -O test_data.zip https://github.com/maptiler/tileserver-gl/releases/download/v1.3.0/test_data.zip
+    - run: unzip -q test_data.zip -d test_data
+    - run: xvfb-run --server-args="-screen 0 1024x768x24" npm test
+    strategy:
+      matrix:
+        CXX:
+        - g++-4.8
+    env:
+      CXX: "${{ matrix.CXX }}"
