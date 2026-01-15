@@ -1,0 +1,43 @@
+name: Tufuwu/test2
+on:
+  push:
+    branches:
+    - "**/*"
+  pull_request:
+concurrency:
+#   # This item has no matching transformer
+#   maximum_number_of_builds: 0
+jobs:
+  Schema_linter:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - uses: actions/setup-python@v5.0.0
+      with:
+        python-version: 3.6
+    - run: pip install -r requirements.txt
+    - run: cd src
+    - run: python schema_linter.py --environment "${{ github.ref }}"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+        SLACK_CHANNEL: "${{ secrets.SLACK_CHANNEL }}"
+  Schema_tests:
+    needs:
+    - Schema_linter
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - uses: actions/setup-node@v4.0.0
+      with:
+        cache: npm
+        node-version: 8
+    - run: cd tests
+    - run: npm install
+    - run: npm test
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+        SLACK_CHANNEL: "${{ secrets.SLACK_CHANNEL }}"
